@@ -14,7 +14,6 @@
 \>\>123 - *reply*
 
 > \> quote
-
 >> \>\> quote of the second level
 
 *\* the space after > is required*
@@ -47,19 +46,19 @@
 
 `{{https://sode.su} different text of link}` ==> [different text of link](https://sode.su)
 
-*\*the spaces are required*
+*\* the spaces are required*
 
 
-\- an item of the unordered list
+\- an item of the unordered list  
 \- an another item
 
-\0. an item of the ordered list, 0 will turn to 1
+\0. an item of the ordered list, 0 will turn to 1  
 \0. an another item, 0 will turn to 2
 
 
-\#hashtag
-@username
-\~clubname
+\#hashtag  
+@username  
+\~clubname  
 
 
-\-\-\- *horizontal rule*
+\-\-\- - *horizontal rule*
