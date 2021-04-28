@@ -52,8 +52,8 @@
 \- an item of the unordered list  
 \- an another item
 
-\0. an item of the ordered list, 0 will turn to 1  
-\0. an another item, 0 will turn to 2
+0\. an item of the ordered list, 0 will turn to 1  
+0\. an another item, 0 will turn to 2
 
 
 \#hashtag  
