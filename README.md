@@ -14,7 +14,7 @@
 \>\>123 - *reply*
 
 > \> quote
->> \>\> quote of the second level
+>> \> \> quote of the second level
 
 *\* the space after > is required*
 
