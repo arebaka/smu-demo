@@ -1,10 +1,10 @@
 enum State {
 	START, LINE, SPACE, NUM_SIGN_AT_START, NUM_SIGN, AT_SIGN, TILDE, RICH, GT_SIGN_AT_START, GT_SIGN, LEFT_SB_AT_START, LEFT_PH, LEFT_PH_AT_START, HYPHEN, ZERO,
-	HASHTAG, USER_MENTION, CLUB_MENTION, RIGHT_SB, IMAGE_URI, VIDEO_URI, LINK_URI, MUSIC_URI
+	HASHTAG, USER_MENTION, CLUB_MENTION, RIGHT_SB, IMAGE_URI, VIDEO_URI, LINK_URI, MUSIC_URI, DOUBLE_HYPHEN
 }
 
 enum Type {
-	NL, LINE, RICH_OPEN, RICH_CLOSE
+	NL, LINE, RICH_OPEN, RICH_CLOSE, UL_MARKER
 }
 
 
@@ -168,7 +168,6 @@ class Translit
 				case '\n':
 					res.push(new Token(Type.LINE, token));
 					res.push(new Token(Type.NL, "\n"));
-					token = "";
 					state = State.START;
 				break;
 				case ' ':
@@ -196,7 +195,6 @@ class Translit
 				case ']':
 					if (flags & this.RICH) {
 						res.push(new Token(Type.LINE, token));
-						token = "";
 						state = State.RIGHT_SB;
 					} else {
 						token += c;
@@ -205,7 +203,6 @@ class Translit
 				case '{':
 					if (flags & this.LINKS) {
 						res.push(new Token(Type.LINE, token));
-						token = "";
 						state = State.LEFT_PH;
 					} else {
 						token += c;
@@ -222,7 +219,6 @@ class Translit
 				case '\n':
 					res.push(new Token(Type.LINE, token));
 					res.push(new Token(Type.NL, "\n"));
-					token = "";
 					state = State.START;
 				break;
 				case ' ':
@@ -631,7 +627,6 @@ class Translit
 				case '\n':
 					res.push(new Token(Type.LINE, token));
 					res.push(new Token(Type.NL, "\n"));
-					token = "";
 					state = State.START;
 				break;
 				case ' ':
@@ -652,12 +647,10 @@ class Translit
 				break;
 				case '[':
 					res.push(new Token(Type.RICH_OPEN, rich + c));
-					token = "";
 					state = State.SPACE;
 				break;
 				case '{':
 					res.push(new Token(Type.LINE, token));
-					token = "";
 					state = State.LEFT_PH;
 				break;
 				default:
@@ -979,6 +972,85 @@ class Translit
 			break;
 
 			case State.HYPHEN:
+				switch (c) {
+				case '\n':
+					res.push(new Token(Type.LINE, "-"));
+					res.push(new Token(Type.NL, "\n"));
+					state = State.START;
+				break;
+				case ' ':
+					res.push(new Token(Type.UL_MARKER, "- "));
+					state = State.START;
+				break;
+				case '#':
+					res.push(new Token(Type.LINE, "-"));
+					token = c;
+					state = State.NUM_SIGN;
+				break;
+				case '@':
+					res.push(new Token(Type.LINE, "-"));
+					token = c;
+					state = State.AT_SIGN;
+				break;
+				case '~':
+					if (flags & this.MENTIONS) {
+						res.push(new Token(Type.LINE, "-"));
+						token = c;
+						state = State.TILDE;
+					} else if (flags & this.RICH) {
+						res.push(new Token(Type.LINE, "-"));
+						rich  = c;
+						state = State.RICH;
+					} else {
+						token = "-" + c;
+						state = State.LINE;
+					}
+				break;
+				case '>':
+					if (flags & this.REPLIES) {
+						res.push(new Token(Type.LINE, "-"));
+						token = c;
+						state = State.GT_SIGN;
+					} else {
+						token = "-" + c;
+						state = State.LINE;
+					}
+				break;
+				case '*':
+				case '%':
+				case '_':
+				case '^':
+				case '+':
+				case '&':
+				case '`':
+				case '=':
+					if (flags & this.RICH) {
+						res.push(new Token(Type.LINE, "-"));
+						rich = c;
+						state = State.RICH;
+					} else {
+						token = "-" + c;
+						state = State.LINE;
+					}
+				break;
+				case '[':
+					token = "-" + c;
+					state = State.SPACE;
+				break;
+				case '{':
+					res.push(new Token(Type.LINE, "-"));
+					state = State.LEFT_PH;
+				break;
+				case '-':
+					token = "--";
+					state = State.DOUBLE_HYPHEN;
+				break;
+				default:
+					token = "-" + c;
+					state = State.LINE;
+				break;
+				}
+
 			break;
 
 			case State.ZERO:
@@ -1009,6 +1081,9 @@ class Translit
 			break;
 
 			case State.MUSIC_URI:
+			break;
+
+			case State.DOUBLE_HYPHEN:
 			break;
 			}
 		}
