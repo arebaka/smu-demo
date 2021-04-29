@@ -9,6 +9,7 @@ enum Type {
 
 
 
+
 class Token
 {
 	private type: Type;
@@ -20,6 +21,7 @@ class Token
 		this.raw  = raw;
 	}
 }
+
 
 
 
@@ -51,6 +53,7 @@ class Translit
 			let c = text[i];
 
 			switch (state) {
+			/// START ///
 			case State.START:
 				switch (c) {
 				case '\n':
@@ -163,6 +166,7 @@ class Translit
 				}
 			break;
 
+			/// LINE ///
 			case State.LINE:
 				switch (c) {
 				case '\n':
@@ -214,6 +218,7 @@ class Translit
 				}
 			break;
 
+			/// SPACE ///
 			case State.SPACE:
 				switch (c) {
 				case '\n':
@@ -298,6 +303,7 @@ class Translit
 				}
 			break;
 
+			/// NUM SIGN AT START ///
 			case State.NUM_SIGN_AT_START:
 				switch (c) {
 				case '\n':
@@ -383,6 +389,7 @@ class Translit
 				}
 			break;
 
+			/// NUM SIGN ///
 			case State.NUM_SIGN:
 				switch (c) {
 				case '\n':
@@ -464,6 +471,7 @@ class Translit
 				}
 			break;
 
+			/// AT SIGN ///
 			case State.AT_SIGN:
 				switch (c) {
 				case '\n':
@@ -545,6 +553,7 @@ class Translit
 				}
 			break;
 
+			/// TILDE ///
 			case State.TILDE:
 				switch (c) {
 				case '\n':
@@ -622,6 +631,7 @@ class Translit
 				}
 			break;
 
+			/// RICH ///
 			case State.RICH:
 				switch (c) {
 				case '\n':
@@ -660,6 +670,7 @@ class Translit
 				}
 			break;
 
+			/// LEFT SB AT START ///
 			case State.LEFT_SB_AT_START:
 				switch (c) {
 				case '\n':
@@ -745,6 +756,7 @@ class Translit
 				}
 			break;
 
+			/// LEFT PH ///
 			case State.LEFT_PH:
 				switch (c) {
 				case '\n':
@@ -821,6 +833,7 @@ class Translit
 				}
 			break;
 
+			/// LEFT PH AT START ///
 			case State.LEFT_PH_AT_START:
 				switch (c) {
 				case '\n':
@@ -901,6 +914,7 @@ class Translit
 				}
 			break;
 
+			/// RIGHT SB ///
 			case State.RIGHT_SB:
 				switch (c) {
 				case '\n':
@@ -971,6 +985,7 @@ class Translit
 				}
 			break;
 
+			/// HYPHEN ///
 			case State.HYPHEN:
 				switch (c) {
 				case '\n':
@@ -1053,36 +1068,58 @@ class Translit
 
 			break;
 
+			/// ZERO ///
 			case State.ZERO:
+				switch (c) {
+				case '\n':
+					res.push(new Token(Type.LINE, "0"));
+					res.push(new Token(Type.NL, "\n"));
+					state = State.START;
+				break;
+				case ' ':
+					token = "0" + c;
+					state = State.LINE;
+				break;
+				}
 			break;
 
+			/// GT SIGN AT START ///
 			case State.GT_SIGN_AT_START:
 			break;
 
+			/// GT SIGN ///
 			case State.GT_SIGN:
 			break;
 
+			/// HASHTAG ///
 			case State.HASHTAG:
 			break;
 
+			/// USER MENTION ///
 			case State.USER_MENTION:
 			break;
 
+			/// CLUB MENTION ///
 			case State.CLUB_MENTION:
 			break;
 
+			/// IMAGE URI ///
 			case State.IMAGE_URI:
 			break;
 
+			/// VIDEO URI ///
 			case State.VIDEO_URI:
 			break;
 
+			/// LINK URI ///
 			case State.LINK_URI:
 			break;
 
+			/// MUSIC URI ///
 			case State.MUSIC_URI:
 			break;
 
+			/// DOUBLE HYPHEN ///
 			case State.DOUBLE_HYPHEN:
 			break;
 			}
