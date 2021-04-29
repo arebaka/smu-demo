@@ -1,6 +1,6 @@
 enum State {
 	START, LINE, SPACE, NUM_SIGN_AT_START, NUM_SIGN, AT_SIGN, TILDE, RICH, GT_SIGN_AT_START, GT_SIGN, LEFT_SB_AT_START, LEFT_PH, LEFT_PH_AT_START, HYPHEN, ZERO,
-	HASHTAG, USER_MENTION, CLUB_MENTION, RIGHT_SB, RIGHT_PH, IMAGE_LINK, VIDEO_LINK
+	HASHTAG, USER_MENTION, CLUB_MENTION, RIGHT_SB, RIGHT_PH, IMAGE_URI, VIDEO_URI, LINK_URI, MUSIC_URI
 }
 
 enum Type {
@@ -696,12 +696,12 @@ class Translit
 				break;
 				case '#':
 					res.push(new Token(Type.LINE, "["));
-					token = "#";
+					token = c;
 					state = State.NUM_SIGN;
 				break;
 				case '@':
 					res.push(new Token(Type.LINE, "["));
-					token = "@";
+					token = c;
 					state = State.AT_SIGN;
 				break;
 				case '~':
@@ -747,14 +747,14 @@ class Translit
 				break;
 				case '[':
 					if (flags & this.MEDIA) {
-						state = State.IMAGE_LINK;
+						state = State.IMAGE_URI;
 					} else {
 						res.push(new Token(Type.LINE, "["));
 					}
 				break;
 				case '{':
 					if (flags & this.MEDIA) {
-						state = State.VIDEO_LINK;
+						state = State.VIDEO_URI;
 					} else {
 						res.push(new Token(Type.LINE, "["));
 						state = State.LEFT_PH;
@@ -768,9 +768,159 @@ class Translit
 			break;
 
 			case State.LEFT_PH:
+				switch (c) {
+				case '\n':
+					res.push(new Token(Type.LINE, "{"));
+					res.push(new Token(Type.NL, "\n"));
+					state = State.START;
+				break;
+				case ' ':
+					token = "{" + c;
+					state = State.SPACE;
+				break;
+				case '#':
+					res.push(new Token(Type.LINE, "{"));
+					token = c;
+					state = State.NUM_SIGN;
+				break;
+				case '@':
+					res.push(new Token(Type.LINE, "{"));
+					token = c;
+					state = State.AT_SIGN;
+				break;
+				case '~':
+					if (flags & this.MENTIONS) {
+						res.push(new Token(Type.LINE, "{"));
+						token = c;
+						state = State.TILDE;
+					} else if (flags & this.RICH) {
+						res.push(new Token(Type.LINE, "{"));
+						rich  = c;
+						state = State.RICH;
+					} else {
+						token = "{" + c;
+						state = State.LINE;
+					}
+				break;
+				case '>':
+					if (flags & this.REPLIES) {
+						res.push(new Token(Type.LINE, "{"));
+						token = c;
+						state = State.GT_SIGN;
+					} else {
+						token = "{" + c;
+						state = State.LINE;
+					}
+				break;
+				case '*':
+				case '%':
+				case '_':
+				case '^':
+				case '+':
+				case '&':
+				case '`':
+				case '=':
+					if (flags & this.RICH) {
+						res.push(new Token(Type.LINE, "{"));
+						rich = c;
+						state = State.RICH;
+					} else {
+						token = "{" + c;
+						state = State.LINE;
+					}
+				break;
+				case '[':
+					token = "{" + c;
+					state = State.LINE;
+				break;
+				case '{':
+					state = State.LINK_URI;
+				break;
+				default:
+					token = "{" + c;
+					state = State.LINE;
+				break;
+				}
 			break;
 
 			case State.LEFT_PH_AT_START:
+				switch (c) {
+				case '\n':
+					res.push(new Token(Type.LINE, "{"));
+					res.push(new Token(Type.NL, "\n"));
+					state = State.START;
+				break;
+				case ' ':
+					token = "{" + c;
+					state = State.SPACE;
+				break;
+				case '#':
+					res.push(new Token(Type.LINE, "{"));
+					token = c;
+					state = State.NUM_SIGN;
+				break;
+				case '@':
+					res.push(new Token(Type.LINE, "{"));
+					token = c;
+					state = State.AT_SIGN;
+				break;
+				case '~':
+					if (flags & this.MENTIONS) {
+						res.push(new Token(Type.LINE, "{"));
+						token = c;
+						state = State.TILDE;
+					} else if (flags & this.RICH) {
+						res.push(new Token(Type.LINE, "{"));
+						rich  = c;
+						state = State.RICH;
+					} else {
+						token = "{" + c;
+						state = State.LINE;
+					}
+				break;
+				case '>':
+					if (flags & this.REPLIES) {
+						res.push(new Token(Type.LINE, "{"));
+						token = c;
+						state = State.GT_SIGN;
+					} else {
+						token = "{" + c;
+						state = State.LINE;
+					}
+				break;
+				case '*':
+				case '%':
+				case '_':
+				case '^':
+				case '+':
+				case '&':
+				case '`':
+				case '=':
+					if (flags & this.RICH) {
+						res.push(new Token(Type.LINE, "{"));
+						rich = c;
+						state = State.RICH;
+					} else {
+						token = "{" + c;
+						state = State.LINE;
+					}
+				break;
+				case '[':
+					if (flags & this.MUSIC) {
+						state = State.MUSIC_URI;
+					} else {
+						token = "{" + c;
+						state = State.LINE;
+					}
+				break;
+				case '{':
+					state = State.LINK_URI;
+				break;
+				default:
+					token = "{" + c;
+					state = State.LINE;
+				break;
+				}
 			break;
 
 			case State.RIGHT_SB:
@@ -800,10 +950,16 @@ class Translit
 			case State.CLUB_MENTION:
 			break;
 
-			case State.IMAGE_LINK:
+			case State.IMAGE_URI:
 			break;
 
-			case State.VIDEO_LINK:
+			case State.VIDEO_URI:
+			break;
+
+			case State.LINK_URI:
+			break;
+
+			case State.MUSIC_URI:
 			break;
 			}
 		}
