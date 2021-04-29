@@ -1,6 +1,6 @@
 enum State {
 	START, LINE, SPACE, NUM_SIGN_AT_START, NUM_SIGN, AT_SIGN, TILDE, RICH, GT_SIGN_AT_START, GT_SIGN, LEFT_SB_AT_START, LEFT_PH, LEFT_PH_AT_START, HYPHEN, ZERO,
-	HASHTAG, USER_MENTION, CLUB_MENTION, RIGHT_SB, RIGHT_PH, IMAGE_URI, VIDEO_URI, LINK_URI, MUSIC_URI
+	HASHTAG, USER_MENTION, CLUB_MENTION, RIGHT_SB, IMAGE_URI, VIDEO_URI, LINK_URI, MUSIC_URI
 }
 
 enum Type {
@@ -140,13 +140,6 @@ class Translit
 						state = State.LINE;
 					}
 				break;
-				case '}':
-					if (flags & this.LINKS) {
-						state = State.RIGHT_PH;
-					} else {
-						state = State.LINE;
-					}
-				break;
 				case '-':
 					if (flags & (this.LISTS | this.HR)) {
 						state = State.HYPHEN;
@@ -214,15 +207,6 @@ class Translit
 						res.push(new Token(Type.LINE, token));
 						token = "";
 						state = State.LEFT_PH;
-					} else {
-						token += c;
-					}
-				break;
-				case '}':
-					if (flags & this.LINKS) {
-						res.push(new Token(Type.LINE, token));
-						token = "";
-						state = State.RIGHT_PH;
 					} else {
 						token += c;
 					}
@@ -992,9 +976,6 @@ class Translit
 					state = State.LINE;
 				break;
 				}
-			break;
-
-			case State.RIGHT_PH:
 			break;
 
 			case State.HYPHEN:
