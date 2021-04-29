@@ -667,7 +667,7 @@ class Translit
 					token = c;
 				break;
 				case '[':
-					res.push(new Token(Type.RICH_OPEN, token + c));
+					res.push(new Token(Type.RICH_OPEN, rich + c));
 					token = "";
 					state = State.SPACE;
 				break;
@@ -750,6 +750,7 @@ class Translit
 						state = State.IMAGE_URI;
 					} else {
 						res.push(new Token(Type.LINE, "["));
+						state = State.SPACE;
 					}
 				break;
 				case '{':
@@ -831,7 +832,7 @@ class Translit
 				break;
 				case '[':
 					token = "{" + c;
-					state = State.LINE;
+					state = State.SPACE;
 				break;
 				case '{':
 					state = State.LINK_URI;
@@ -910,7 +911,7 @@ class Translit
 						state = State.MUSIC_URI;
 					} else {
 						token = "{" + c;
-						state = State.LINE;
+						state = State.SPACE;
 					}
 				break;
 				case '{':
@@ -924,6 +925,73 @@ class Translit
 			break;
 
 			case State.RIGHT_SB:
+				switch (c) {
+				case '\n':
+					res.push(new Token(Type.LINE, "]"));
+					res.push(new Token(Type.NL, "\n"));
+					state = State.START;
+				break;
+				case ' ':
+					token = "]" + c;
+					state = State.SPACE;
+				break;
+				case '#':
+					res.push(new Token(Type.LINE, "]"));
+					token = c;
+					state = State.NUM_SIGN;
+				break;
+				case '@':
+					res.push(new Token(Type.LINE, "]"));
+					token = c;
+					state = State.AT_SIGN;
+				break;
+				case '~':
+					if (flags & this.RICH) {
+						res.push(new Token(Type.RICH_CLOSE, "]" + c));
+					} else {
+						token = "]" + c;
+					}
+					state = State.LINE;
+				break;
+				case '>':
+					if (flags & this.REPLIES) {
+						res.push(new Token(Type.LINE, "]"));
+						token = c;
+						state = State.GT_SIGN;
+					} else {
+						token = "]" + c;
+						state = State.LINE;
+					}
+				break;
+				case '*':
+				case '%':
+				case '_':
+				case '^':
+				case '+':
+				case '&':
+				case '`':
+				case '=':
+					if (flags & this.RICH) {
+						res.push(new Token(Type.RICH_CLOSE, "]" + c));
+					} else {
+						token = "]" + c;
+					}
+					state = State.LINE;
+				break;
+				case '[':
+				case '{':
+				case '}':
+					token = "]" + c;
+					state = State.SPACE;
+				break;
+				case ']':
+					res.push(new Token(Type.LINE, "]"));
+				break;
+				default:
+					token = "]" + c;
+					state = State.LINE;
+				break;
+				}
 			break;
 
 			case State.RIGHT_PH:
