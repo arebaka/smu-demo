@@ -12,5 +12,8 @@
   "bugs": {
     "url": "https://github.com/arebaka/smu-demo/issues"
   },
-  "homepage": "https://github.com/arebaka/smu-demo#readme"
+  "homepage": "https://github.com/arebaka/smu-demo#readme",
+  "devDependencies": {
+    "@types/node": "^15.0.1"
+  }
 }

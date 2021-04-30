@@ -45,7 +45,7 @@ namespace translit
 
         public static tokenize(text: string, flags: number)
         {
-            var res:          Token[] = [],
+            let res:          Token[] = [],
                 state:        State   = State.START,
                 token:        string  = "",
                 rich:         string  = "",
@@ -347,7 +347,6 @@ namespace translit
                     case ';':
                     case ',':
                     case '.':
-                    case '=':
                     case '?':
                     case '(':
                     case ')':
@@ -429,7 +428,6 @@ namespace translit
                     case ';':
                     case ',':
                     case '.':
-                    case '=':
                     case '?':
                     case '(':
                     case ')':
@@ -511,7 +509,6 @@ namespace translit
                     case ';':
                     case ',':
                     case '.':
-                    case '=':
                     case '?':
                     case '(':
                     case ')':
@@ -589,7 +586,6 @@ namespace translit
                     case ';':
                     case ',':
                     case '.':
-                    case '=':
                     case '?':
                     case '(':
                     case ')':
@@ -1129,6 +1125,13 @@ namespace translit
                 break;
                 }
             }
+
+            return res;
         }
-    }    
+    }
 }
+
+
+
+
+module.exports = translit;
