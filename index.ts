@@ -49,7 +49,7 @@ namespace translit
                 state:        State   = State.START,
                 token:        string  = "",
                 rich:         string  = "",
-                headingLevel: number = 0;
+                headingLevel: number  = 0;
 
             text += '\n';
 

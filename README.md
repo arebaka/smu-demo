@@ -44,9 +44,10 @@
 
 `{{https://sode.su}}` *(direct link)* ==> [https://sode.su](https://sode.su)
 
-`{{https://sode.su} different text of link}` ==> [different text of link](https://sode.su)
+`{{https://sode.su} different link text}` ==> [different link text](https://sode.su)
 
 *\* the spaces are required*
+*\* one line can contain only one image/video/track without text*
 
 
 \- an item of the unordered list  
