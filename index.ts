@@ -4,11 +4,11 @@ namespace translit
         START, LINE, SPACE, NUM_SIGN_AT_START, NUM_SIGN, AT_SIGN, TILDE, RICH,
         GT_SIGN_AT_START, GT_SIGN, LEFT_SB_AT_START, LEFT_PH, LEFT_PH_AT_START,
         HYPHEN, ZERO, HASHTAG, USER_MENTION, CLUB_MENTION, RIGHT_SB, IMAGE_URI,
-        VIDEO_URI, LINK_URI, MUSIC_URI, DOUBLE_HYPHEN, ZERO_DOT
+        VIDEO_URI, LINK_URI, MUSIC_URI, DOUBLE_HYPHEN, ZERO_DOT, REPLY_START
     }
 
     enum TokenType {
-        NL, LINE, RICH_OPEN, RICH_CLOSE, UL_MARKER, OL_MARKER
+        NL, LINE, RICH_OPEN, RICH_CLOSE, UL_MARKER, OL_MARKER, QUOTE_START
     }
 
 
@@ -1118,6 +1118,7 @@ namespace translit
                     }
                 break;
 
+                /// ZERO DOT ///
                 case State.ZERO_DOT:
                     switch (c) {
                     case '\n':
@@ -1197,10 +1198,158 @@ namespace translit
 
                 /// GT SIGN AT START ///
                 case State.GT_SIGN_AT_START:
+                    switch (c) {
+                    case '\n':
+                        res.push(new Token(TokenType.LINE, ">"));
+                        res.push(new Token(TokenType.NL, "\n"));
+                        state = State.START;
+                    break;
+                    case ' ':
+                        res.push(new Token(TokenType.QUOTE_START, "> "));
+                        state = State.START;
+                    break;
+                    case '#':
+                        res.push(new Token(TokenType.LINE, ">"));
+                        token = c;
+                        state = State.NUM_SIGN;
+                    break;
+                    case '@':
+                        res.push(new Token(TokenType.LINE, ">"));
+                        token = c;
+                        state = State.AT_SIGN;
+                    break;
+                    case '~':
+                        if (flags & this.MENTIONS) {
+                            res.push(new Token(TokenType.LINE, ">"));
+                            token = c;
+                            state = State.TILDE;
+                        } else if (flags & this.RICH) {
+                            res.push(new Token(TokenType.LINE, ">"));
+                            rich = c;
+                            state = State.RICH;
+                        } else {
+                            token = ">" + c;
+                            state = State.LINE;
+                        }
+                    break;
+                    case '>':
+                        token = ">>"
+                        if (flags & this.REPLIES) {
+                            state = State.REPLY_START;
+                        } else {
+                            state = State.LINE;
+                        }
+                    break;
+                    case '*':
+                    case '%':
+                    case '_':
+                    case '^':
+                    case '+':
+                    case '&':
+                    case '`':
+                    case '=':
+                        if (flags & this.RICH) {
+                            res.push(new Token(TokenType.LINE, ">"));
+                            rich = c;
+                            state = State.RICH;
+                        } else {
+                            token = ">" + c;
+                            state = State.LINE;
+                        }
+                    break;
+                    case '[':
+                        token = ">" + c;
+                        state = State.SPACE;
+                    break;
+                    case '{':
+                        res.push(new Token(TokenType.LINE, ">"));
+                        state = State.LEFT_PH;
+                    break;
+                    default:
+                        token = ">" + c;
+                        state = State.LINE;
+                    break;
+                    }
                 break;
 
                 /// GT SIGN ///
                 case State.GT_SIGN:
+                    switch (c) {
+                    case '\n':
+                        res.push(new Token(TokenType.LINE, ">"));
+                        res.push(new Token(TokenType.NL, "\n"));
+                        state = State.START;
+                    break;
+                    case ' ':
+                        token = "> ";
+                        state = State.SPACE;
+                    break;
+                    case '#':
+                        res.push(new Token(TokenType.LINE, ">"));
+                        token = c;
+                        state = State.NUM_SIGN;
+                    break;
+                    case '@':
+                        res.push(new Token(TokenType.LINE, ">"));
+                        token = c;
+                        state = State.AT_SIGN;
+                    break;
+                    case '~':
+                        if (flags & this.MENTIONS) {
+                            res.push(new Token(TokenType.LINE, ">"));
+                            token = c;
+                            state = State.TILDE;
+                        } else if (flags & this.RICH) {
+                            res.push(new Token(TokenType.LINE, ">"));
+                            rich = c;
+                            state = State.RICH;
+                        } else {
+                            token = ">" + c;
+                            state = State.LINE;
+                        }
+                    break;
+                    case '>':
+                        token = ">>"
+                        if (flags & this.REPLIES) {
+                            state = State.REPLY_START;
+                        } else {
+                            state = State.LINE;
+                        }
+                    break;
+                    case '*':
+                    case '%':
+                    case '_':
+                    case '^':
+                    case '+':
+                    case '&':
+                    case '`':
+                    case '=':
+                        if (flags & this.RICH) {
+                            res.push(new Token(TokenType.LINE, ">"));
+                            rich = c;
+                            state = State.RICH;
+                        } else {
+                            token = ">" + c;
+                            state = State.LINE;
+                        }
+                    break;
+                    case '[':
+                        token = ">" + c;
+                        state = State.SPACE;
+                    break;
+                    case '{':
+                        res.push(new Token(TokenType.LINE, ">"));
+                        state = State.LEFT_PH;
+                    break;
+                    default:
+                        token = ">" + c;
+                        state = State.LINE;
+                    break;
+                    }
+                break;
+
+                /// REPLY START ///
+                case State.REPLY_START:
                 break;
 
                 /// HASHTAG ///

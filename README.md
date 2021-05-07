@@ -46,7 +46,7 @@
 
 `{{https://sode.su} different link text}` ==> [different link text](https://sode.su)
 
-*\* the spaces are required*
+*\* the spaces are required*  
 *\* one line can contain only one image/video/track without text*
 
 
